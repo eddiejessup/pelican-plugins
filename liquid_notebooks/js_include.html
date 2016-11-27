@@ -24,7 +24,7 @@ $(function() {
     var wrapperId = 'nb-wrapper';
     var $codeAreas = $('div#' + wrapperId).find('div.input')
     wrap = document.getElementById(wrapperId);
-    $(wrap).prepend('<button class="btn", id="' + btnId + '">Toggle code visibility</button>');
+    $(wrap).prepend('<button id="' + btnId + '">Toggle code visibility</button>');
     $('button#' + btnId).click(function () {
         $codeAreas.toggle();
     });
