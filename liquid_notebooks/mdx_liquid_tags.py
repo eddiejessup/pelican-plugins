@@ -70,8 +70,10 @@ class LiquidTags(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         self.htmlStash = md.htmlStash
         md.registerExtension(self)
+        md.preprocessors.add('mdincludes',
+                             _LiquidTagsPreprocessor(self), '>html_block')
 
 
 def makeExtension(configs=None):
-    """Wrapper for a MarkDown extension"""
+    """Wrapper for a Markdown extension"""
     return LiquidTags(configs=configs)

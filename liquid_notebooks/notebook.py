@@ -166,4 +166,4 @@ def notebook(preprocessor, tag, markup):
     return stashed_body
 
 # Allow notebook to be a Pelican plugin.
-from liquid_tags import register
+from .liquid_tags import register
