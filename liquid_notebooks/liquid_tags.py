@@ -3,18 +3,27 @@ from .mdx_liquid_tags import LiquidTags, LT_CONFIG
 
 
 def addLiquidTags(gen):
-    if not gen.settings.get('MD_EXTENSIONS'):
-        from pelican.settings import DEFAULT_CONFIG
-        gen.settings['MD_EXTENSIONS'] = DEFAULT_CONFIG['MD_EXTENSIONS']
+    settings = gen.settings
 
-    if LiquidTags not in gen.settings['MD_EXTENSIONS']:
-        configs = dict()
-        for key, value in LT_CONFIG.items():
-            configs[key] = value
-        for key, value in gen.settings.items():
-            if key in LT_CONFIG:
-                configs[key] = value
-        gen.settings['MD_EXTENSIONS'].append(LiquidTags(configs))
+    # Use the markdown configuration dict, the current method, if it exists.
+    if 'MARKDOWN' in settings:
+        markdown_conf = settings['MARKDOWN']
+        # Get the extensions list, or make it if it does not exist.
+        ext_list = markdown_conf.setdefault('extensions', [])
+    # If user has set 'MD_EXTENSIONS', use that, even though it is deprecated.
+    elif 'MD_EXTENSIONS' in settings:
+        ext_list = settings['MD_EXTENSIONS']
+    # Otherwise, make a configuration to add to.
+    else:
+        ext_list = []
+        settings['MARKDOWN'] = {'extensions': ext_list}
+    if LiquidTags not in ext_list:
+        configs = LT_CONFIG.copy()
+        for k in gen.settings:
+            if k in configs:
+                configs[k] = gen.settings[k]
+        # Instantiate extension and append it to the current extensions.
+        ext_list.append(LiquidTags(configs))
 
 
 def register():

@@ -267,13 +267,23 @@ def mathjax_for_markdown(pelicanobj, mathjax_script, mathjax_settings):
     config['math_tag_class'] = 'math'
     config['auto_insert'] = mathjax_settings['auto_insert']
 
+    settings = pelicanobj.settings
+
+    # Use the markdown configuration dict, the current method, if it exists.
+    if 'MARKDOWN' in settings:
+        markdown_conf = settings['MARKDOWN']
+        # Get the extensions list, or make it if it does not exist.
+        ext_list = markdown_conf.setdefault('extensions', [])
+    # If user has set 'MD_EXTENSIONS', use that, even though it is deprecated.
+    elif 'MD_EXTENSIONS' in settings:
+        ext_list = settings['MD_EXTENSIONS']
+    # Otherwise, make a configuration to add to.
+    else:
+        ext_list = []
+        settings['MARKDOWN'] = {'extensions': ext_list}
     # Instantiate markdown extension and append it to the current extensions
-    try:
-        pelicanobj.settings['MD_EXTENSIONS'].append(PelicanMathJaxExtension(config))
-    except:
-        sys.excepthook(*sys.exc_info())
-        sys.stderr.write("\nError - the pelican mathjax markdown extension failed to configure. MathJax is non-functional.\n")
-        sys.stderr.flush()
+    ext_list.append(PelicanMathJaxExtension(config))
+
 
 def mathjax_for_rst(pelicanobj, mathjax_script):
     """Setup math for RST"""
