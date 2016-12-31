@@ -32,6 +32,9 @@ div.text_cell .prompt {
     display: none;
 }
 
+div.output_html {
+  display: table;
+}
 /* Remove horizontal padding from text cells, */
 /* so it aligns with outer body text. */
 div.text_cell_render {
