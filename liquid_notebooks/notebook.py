@@ -154,8 +154,19 @@ def notebook(preprocessor, tag, markup):
     css_as_less = 'div#' + WRAPPER_ID + ' { ' + resource_css + ' }'
     # Use the LESS compiler to compile the LESS into equivalent CSS.
     # Basically it prefixes all the existing selectors with 'div#foo [...]'.
-    process = subprocess.run(["lessc", "-"], stdout=subprocess.PIPE,
-                             input=css_as_less, universal_newlines=True)
+
+    def run(args):
+        return subprocess.run(args, stdout=subprocess.PIPE, input=css_as_less,
+                              universal_newlines=True)
+    less_args = ["lessc", "-", "--clean-css"]
+    process = run(less_args)
+    # If this doesn't work, try without clean-css plugin.
+    if process.returncode != 0:
+        less_args.pop()
+        process = run(less_args)
+    if process.returncode != 0 or not process.stdout:
+        raise Exception('Failed to process notebook CSS. Is less installed?'
+                        'Specifically, can you run "lessc --version"?')
     scoped_css = CSS_WRAPPER.format(process.stdout)
 
     augmented_body = '\n'.join([scoped_css, body, JS_INCLUDE])
